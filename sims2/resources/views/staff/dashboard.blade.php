@@ -29,7 +29,7 @@
             <header class="top-bar">
                 <div class="page-title">
                     <h1>Staff Portal</h1>
-                    <p class="date">Hello, ready for your shift?</p>
+                    <p class="date">Live queue and stock updates for shift awareness.</p>
                 </div>
                 <div class="user-profile">
                     <div class="user-info">
@@ -46,52 +46,43 @@
 
             <div class="stats-grid">
                 <div class="card stat-card">
-                    <h3>Assigned Tasks</h3>
-                    <div class="number">8</div>
-                    <div class="trend up">3 High Priority</div>
+                    <h3>Queue (Last 15 mins)</h3>
+                    <div class="number">{{ $queueCount }}</div>
+                    <div class="trend {{ $queueLevel === 'high' ? 'down' : 'up' }}">{{ strtoupper($queueLevel) }} traffic</div>
                 </div>
                 <div class="card stat-card">
-                    <h3>Items Scanned</h3>
-                    <div class="number">142</div>
-                    <div class="trend up">Today</div>
-                </div>
-                <div class="card stat-card">
-                    <h3>Shift Hours</h3>
-                    <div class="number">4.5</div>
-                    <div class="trend">Remaining</div>
+                    <h3>Recent Stock Events</h3>
+                    <div class="number">{{ $recentMovements->count() }}</div>
+                    <div class="trend up">Auto-refreshed by transactions</div>
                 </div>
             </div>
 
             <div class="recent-orders">
-                <h2>My Assigned Tasks</h2>
+                <h2>Latest Inventory Changes</h2>
                 <table class="styled-table">
                     <thead>
                         <tr>
-                            <th>Task ID</th>
-                            <th>Description</th>
-                            <th>Area</th>
-                            <th>Status</th>
+                            <th>Time</th>
+                            <th>Item</th>
+                            <th>Type</th>
+                            <th>Change</th>
+                            <th>After</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#TSK-101</td>
-                            <td>Restock Organic Apples</td>
-                            <td>Aisle 4</td>
-                            <td><span class="status pending">In Progress</span></td>
-                        </tr>
-                        <tr>
-                            <td>#TSK-102</td>
-                            <td>Quality Check: Tomatoes</td>
-                            <td>Storage B</td>
-                            <td><span class="status pending">Pending</span></td>
-                        </tr>
-                        <tr>
-                            <td>#TSK-099</td>
-                            <td>Clean Zone C</td>
-                            <td>Loading Dock</td>
-                            <td><span class="status delivered">Completed</span></td>
-                        </tr>
+                        @forelse($recentMovements as $movement)
+                            <tr>
+                                <td>{{ optional($movement->created_at)->format('M d, h:i A') }}</td>
+                                <td>{{ $movement->inventory?->name ?? 'N/A' }}</td>
+                                <td>{{ strtoupper($movement->movement_type) }}</td>
+                                <td>{{ $movement->quantity_change }}</td>
+                                <td>{{ $movement->quantity_after }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #9bb7ed;">No stock movement yet.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

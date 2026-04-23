@@ -16,6 +16,7 @@
                 <a href="{{ route('inventory.index') }}">Inventory</a>
                 <a href="{{ route('staff.index') }}">Staff</a>
                 <a href="{{ route('reports.index') }}" class="active">Reports</a>
+                <a href="{{ route('admin.complaints') }}">Complaints</a>
                 <a href="{{ route('pos.index') }}">Point of Sales</a>
             </nav>
             <div class="logout-section">
@@ -25,10 +26,11 @@
                 </form>
             </div>
         </aside>
+
         <main class="main-content">
             <header class="top-bar">
                 <div class="page-title">
-                    <h1>Reports</h1>
+                    <h1>Full Monitoring Report</h1>
                     <p class="date">{{ now()->format('l, M j, Y') }}</p>
                 </div>
                 <div class="user-profile">
@@ -39,81 +41,133 @@
                     <div class="avatar"></div>
                 </div>
             </header>
-            <div class="recent-orders">
-                <div class="report-header">
-                    <div>
-                        <h2>Sales and Inventory Reports</h2>
-                        <p>Here is a summary of the latest activity and performance for your store.</p>
-                    </div>
-                    <div class="report-actions">
-                        <button class="report-btn" onclick="refreshReports()">Refresh Data</button>
-                        <button class="report-btn secondary" onclick="exportReport('csv')">Export CSV</button>
-                        <button class="report-btn secondary" onclick="exportReport('pdf')">Export PDF</button>
-                    </div>
+
+            <div class="stats-grid">
+                <div class="card stat-card">
+                    <h3>Weekly Sales</h3>
+                    <div class="number">₱{{ number_format($weeklySales, 2) }}</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Weekly Refunds</h3>
+                    <div class="number">₱{{ number_format($weeklyRefunds, 2) }}</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Weekly Spoiled Qty</h3>
+                    <div class="number">{{ $weeklySpoiledQty }}</div>
+                </div>
+                <div class="card stat-card">
+                    <h3>Open Alerts</h3>
+                    <div class="number">{{ $activeAlerts->count() }}</div>
+                </div>
+            </div>
+
+            <div class="recent-orders" style="margin-top: 16px;">
+                <h2>Alert Feed</h2>
+                <table class="styled-table">
+                    <thead>
+                        <tr><th>Time</th><th>Item</th><th>Type</th><th>Value</th></tr>
+                    </thead>
+                    <tbody>
+                        @forelse($activeAlerts as $alert)
+                            <tr>
+                                <td>{{ optional($alert->triggered_at)->format('M d, h:i A') }}</td>
+                                <td>{{ $alert->inventory?->name ?? 'N/A' }}</td>
+                                <td>{{ strtoupper(str_replace('_', ' ', $alert->alert_type)) }}</td>
+                                <td>{{ $alert->threshold_value }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4" style="text-align:center; color:#9bb7ed;">No active alerts.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="report-grid" style="margin-top: 16px;">
+                <div class="report-card">
+                    <h3>Latest Sales</h3>
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Sale #</th><th>Total</th><th>Time</th></tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentSales as $sale)
+                                <tr>
+                                    <td>{{ $sale->sale_number }}</td>
+                                    <td>₱{{ number_format((float) $sale->total_amount, 2) }}</td>
+                                    <td>{{ optional($sale->sold_at)->format('M d, h:i A') }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="3" style="text-align:center; color:#9bb7ed;">No sales records.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="report-summary-grid">
-                    <div class="card stat-card">
-                        <h3>Weekly Sales</h3>
-                        <div class="number">₱12,840</div>
-                    </div>
-                    <div class="card stat-card">
-                        <h3>Low Stock Items</h3>
-                        <div class="number">7</div>
-                    </div>
-                    <div class="card stat-card">
-                        <h3>Pending Orders</h3>
-                        <div class="number">24</div>
-                    </div>
+                <div class="report-card">
+                    <h3>Latest Refunds</h3>
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Sale #</th><th>Item</th><th>Qty</th></tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentRefunds as $refund)
+                                <tr>
+                                    <td>{{ $refund->sale?->sale_number ?? 'N/A' }}</td>
+                                    <td>{{ $refund->inventory?->name ?? 'N/A' }}</td>
+                                    <td>{{ $refund->refunded_quantity }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="3" style="text-align:center; color:#9bb7ed;">No refund records.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="report-grid" style="margin-top: 12px;">
+                <div class="report-card">
+                    <h3>Latest Spoilage Logs</h3>
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Item</th><th>Qty</th><th>Detected By</th></tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentSpoilage as $log)
+                                <tr>
+                                    <td>{{ $log->inventory?->name ?? 'N/A' }}</td>
+                                    <td>{{ $log->quantity }}</td>
+                                    <td>{{ $log->detector?->name ?? 'N/A' }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="3" style="text-align:center; color:#9bb7ed;">No spoilage logs.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="report-grid">
-                    <div class="report-card">
-                        <h3>Revenue Bar Chart</h3>
-                        <div class="bar-chart" id="revenue-bar-chart">
-                            <div class="bar" style="height: 72%;"><span>₱9.2k</span></div>
-                            <div class="bar" style="height: 84%;"><span>₱10.8k</span></div>
-                            <div class="bar" style="height: 100%;"><span>₱12.8k</span></div>
-                            <div class="bar" style="height: 78%;"><span>₱10.0k</span></div>
-                            <div class="bar" style="height: 92%;"><span>₱11.8k</span></div>
-                        </div>
-                        <div class="chart-labels">
-                            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
-                        </div>
-                    </div>
-                    <div class="report-card">
-                        <h3>Sales Distribution</h3>
-                        <div class="pie-chart" id="sales-pie-chart"></div>
-                        <ul class="pie-legend">
-                            <li><span class="legend-dot blue"></span>Fruits 42%</li>
-                            <li><span class="legend-dot green"></span>Vegetables 28%</li>
-                            <li><span class="legend-dot purple"></span>Other 30%</li>
-                        </ul>
-                    </div>
-                    <div class="report-card">
-                        <h3>Report Trend</h3>
-                        <div class="line-chart-wrapper">
-                            <svg viewBox="0 0 280 160" class="line-chart">
-                                <polyline points="0,120 56,98 112,70 168,80 224,50 280,58" fill="none" stroke="#60a5fa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-                                <circle cx="56" cy="98" r="4" fill="#93c5fd" />
-                                <circle cx="112" cy="70" r="4" fill="#93c5fd" />
-                                <circle cx="168" cy="80" r="4" fill="#93c5fd" />
-                                <circle cx="224" cy="50" r="4" fill="#93c5fd" />
-                                <circle cx="280" cy="58" r="4" fill="#93c5fd" />
-                            </svg>
-                            <div class="chart-bottom-labels">
-                                <span>Week 1</span>
-                                <span>Week 2</span>
-                                <span>Week 3</span>
-                                <span>Week 4</span>
-                                <span>Week 5</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="report-card">
+                    <h3>Staff Activities</h3>
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Staff</th><th>Item</th><th>Action</th></tr>
+                        </thead>
+                        <tbody>
+                            @forelse($staffActivities as $activity)
+                                <tr>
+                                    <td>{{ $activity->performer?->name ?? 'N/A' }}</td>
+                                    <td>{{ $activity->inventory?->name ?? 'N/A' }}</td>
+                                    <td>{{ strtoupper($activity->movement_type) }} ({{ $activity->quantity_change }})</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="3" style="text-align:center; color:#9bb7ed;">No staff activity records.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </main>
     </div>
+
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
 </html>

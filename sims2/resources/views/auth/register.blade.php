@@ -43,7 +43,7 @@
 
         <div class="form-section">
             <h2>Sign Up</h2>
-            <div class="sub-head">Create Account</div>
+            <div class="sub-head">Admin Account Registration</div>
 
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
@@ -72,14 +72,7 @@
                     <input type="email" id="email" name="email" placeholder="Enter your email address" value="{{ old('email') }}" required>
                 </div>
 
-                <div class="input-group">
-                    <label for="role">Select Role</label>
-                    <select id="role" name="role" required>
-                        <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choose your role</option>
-                        <option value="Admin" {{ old('role') === 'Admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="Staff" {{ old('role') === 'Staff' ? 'selected' : '' }}>Staff</option>
-                    </select>
-                </div>
+                <div class="alert alert-success">Signup is for Admin accounts only. Staff accounts are created by Admin from Staff Management.</div>
 
                 <div class="input-group">
                     <label for="password">Password</label>
@@ -99,7 +92,7 @@
             </form>
 
             <div class="footer-links" style="justify-content: center; margin-top: 18px;">
-                <span>Demo accounts: admin / admin123 or staff / staff123</span>
+                <span>Staff signup is disabled on public form.</span>
             </div>
         </div>
     </div>

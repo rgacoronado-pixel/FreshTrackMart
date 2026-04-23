@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,18 +12,21 @@ class StaffController extends Controller
 {
     public function index()
     {
-        $staff = User::where('role', 'Staff')->orWhere('role', 'Admin')->get();
+        $this->ensureAdmin();
+
+        $staff = User::where('role', 'Staff')->get();
         return view('admin.staff', compact('staff'));
     }
 
     public function store(Request $request)
     {
+        $this->ensureAdmin();
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
-            'role' => 'required|in:Admin,Staff',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -35,11 +39,18 @@ class StaffController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
-            'role' => $request->role,
+            'role' => 'Staff',
             'password' => Hash::make($request->password),
             'status' => 'active',
         ]);
 
         return redirect()->back()->with('success', 'Staff member added successfully!');
+    }
+
+    private function ensureAdmin(): void
+    {
+        if ((Auth::user()?->role ?? 'Staff') !== 'Admin') {
+            abort(403, 'Only admin users can manage staff accounts.');
+        }
     }
 }

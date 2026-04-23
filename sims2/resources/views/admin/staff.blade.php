@@ -76,7 +76,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($staff ?? [] as $member)
+                        @forelse($staff as $member)
                         <tr>
                             <td>{{ $member->name }}</td>
                             <td>{{ $member->email }}</td>
@@ -130,10 +130,8 @@
 
                     <div class="input-group">
                         <label for="staff_role">Role</label>
-                        <select id="staff_role" name="role" required>
-                            <option value="Staff">Staff</option>
-                            <option value="Admin">Admin</option>
-                        </select>
+                        <input id="staff_role" type="text" value="Staff" readonly>
+                        <input type="hidden" name="role" value="Staff">
                     </div>
 
                     <div class="input-group">

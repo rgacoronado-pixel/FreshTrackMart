@@ -25,6 +25,7 @@
                 </form>
             </div>
         </aside>
+
         <main class="main-content">
             <header class="top-bar">
                 <div class="page-title">
@@ -39,53 +40,142 @@
                     <div class="avatar"></div>
                 </div>
             </header>
+
+            @if(session('success'))
+                <div class="alert alert-success" style="margin-bottom: 20px;">{{ session('success') }}</div>
+            @endif
+
+            @if($errors->any())
+                <div class="alert alert-error" style="margin-bottom: 20px;">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="recent-orders">
-                <h2>POS Terminal</h2>
-                <p>This is a live summary of your POS performance and revenue metrics.</p>
+                <h2>Integrated POS Terminal</h2>
+                <p>PO deliveries, sales/exchange, stock deduction, and invoice/receipt are connected to stock movement logs.</p>
+
                 <div class="stats-grid">
                     <div class="card stat-card">
                         <h3>Active Transactions</h3>
-                        <div class="number">5</div>
+                        <div class="number">{{ $activeTransactions }}</div>
                     </div>
                     <div class="card stat-card">
                         <h3>Today's Revenue</h3>
-                        <div class="number">₱3,280</div>
+                        <div class="number">₱{{ number_format($todayRevenue, 2) }}</div>
                     </div>
                 </div>
 
-                <div class="pos-overview">
+                <div class="pos-overview" style="margin-top: 18px;">
                     <div class="pos-card">
-                        <h3>POS Completion Rate</h3>
-                        <div class="chart-ring">
-                            <div class="chart-center">
-                                <span>78%</span>
-                                <small>of daily target</small>
+                        <h3>Receive Delivery (PO)</h3>
+                        <form method="POST" action="{{ route('po.store') }}" style="display: grid; gap: 10px;">
+                            @csrf
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="po_inventory">Inventory Item</label>
+                                <select id="po_inventory" name="inventory_id" required>
+                                    <option value="">Select item</option>
+                                    @foreach($inventories as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }} ({{ $item->category->name ?? 'No category' }} | Stock: {{ $item->stock }})</option>
+                                    @endforeach
+                                </select>
                             </div>
-                        </div>
-                        <p style="color:#b8cfea; text-align:center;">Your POS performance is at 78% of the daily sales target.</p>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="po_supplier">Supplier</label>
+                                <input id="po_supplier" type="text" name="supplier" required>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="po_qty">Delivery Quantity</label>
+                                <input id="po_qty" type="number" name="quantity" min="1" required>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="po_unit_cost">Unit Cost (₱)</label>
+                                <input id="po_unit_cost" type="number" name="unit_cost" min="0" step="0.01" required>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="po_notes">Notes</label>
+                                <textarea id="po_notes" name="notes" rows="2"></textarea>
+                            </div>
+                            <button class="btn-login" type="submit">Post Delivery & Add Stock</button>
+                        </form>
                     </div>
 
                     <div class="pos-card">
-                        <h3>POS Metrics</h3>
-                        <ul class="progress-list">
-                            <li class="progress-item">
-                                <div class="progress-label"><span>POS Usage</span><span>78%</span></div>
-                                <div class="progress-bar"><div class="progress-fill pos"></div></div>
-                            </li>
-                            <li class="progress-item">
-                                <div class="progress-label"><span>Sales Growth</span><span>64%</span></div>
-                                <div class="progress-bar"><div class="progress-fill sales"></div></div>
-                            </li>
-                            <li class="progress-item">
-                                <div class="progress-label"><span>Customer Reach</span><span>87%</span></div>
-                                <div class="progress-bar"><div class="progress-fill customer"></div></div>
-                            </li>
-                        </ul>
+                        <h3>Sell / Exchange</h3>
+                        <form method="POST" action="{{ route('sales.store') }}" style="display: grid; gap: 10px;">
+                            @csrf
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="sale_inventory">Inventory Item</label>
+                                <select id="sale_inventory" name="inventory_id" required>
+                                    <option value="">Select item</option>
+                                    @foreach($inventories as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }} (Stock: {{ $item->stock }} | Price: ₱{{ number_format((float) $item->price, 2) }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="sale_type">Transaction Type</label>
+                                <select id="sale_type" name="transaction_type" required>
+                                    <option value="sale">Sale</option>
+                                    <option value="exchange">Exchange</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="sale_qty">Quantity</label>
+                                <input id="sale_qty" type="number" name="quantity" min="1" value="1" required>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="paid_amount">Paid Amount (₱)</label>
+                                <input id="paid_amount" type="number" name="paid_amount" min="0" step="0.01" required>
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label for="sale_notes">Notes</label>
+                                <textarea id="sale_notes" name="notes" rows="2"></textarea>
+                            </div>
+                            <button class="btn-login" type="submit">Complete Payment & Generate Receipt</button>
+                        </form>
                     </div>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <h3 style="margin-bottom: 12px; color:#cfe4ff;">Recent Stock Movements</h3>
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Item</th>
+                                <th>Type</th>
+                                <th>Change</th>
+                                <th>After</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentMovements as $movement)
+                                <tr>
+                                    <td>{{ optional($movement->created_at)->format('M d, h:i A') }}</td>
+                                    <td>{{ $movement->inventory?->name ?? 'N/A' }}</td>
+                                    <td>{{ strtoupper($movement->movement_type) }}</td>
+                                    <td>{{ $movement->quantity_change }}</td>
+                                    <td>{{ $movement->quantity_after }}</td>
+                                    <td>{{ $movement->notes }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: #9bb7ed;">No movements yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </main>
     </div>
+
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
 </html>

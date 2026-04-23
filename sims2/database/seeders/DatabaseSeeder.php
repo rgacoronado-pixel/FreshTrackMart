@@ -16,6 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            CategorySeeder::class,
+        ]);
+
         $users = [
             [
                 'name' => 'admin',
@@ -60,3 +64,4 @@ class DatabaseSeeder extends Seeder
         }
     }
 }
+
