@@ -7,16 +7,18 @@
 4. [Installation & Setup](#installation--setup)
 5. [Getting Started](#getting-started)
 6. [Features & Usage](#features--usage)
-7. [Project Structure](#project-structure)
-8. [Development Guide](#development-guide)
-9. [Troubleshooting](#troubleshooting)
-10. [Support & Contributing](#support--contributing)
+7. [User Interface Guide](#user-interface-guide)
+8. [Step-by-Step Function & Button Guide](#step-by-step-function--button-guide)
+9. [Project Structure](#project-structure)
+10. [Development Guide](#development-guide)
+11. [Troubleshooting](#troubleshooting)
+12. [Support & Contributing](#support--contributing)
 
 ---
 
 ## Introduction
 
-Welcome to **FreshTrackMart**! This user manual provides comprehensive guidance for both end-users and developers working with this web-based application. Whether you're setting up the project for the first time or looking to understand specific features, this document will help you navigate through FreshTrackMart.
+Welcome to **FreshTrackMart**! This user manual provides comprehensive guidance for both end-users and developers working with this web-based application. Whether you're setting up the project for development or using it as an end-user, this manual covers everything you need to know.
 
 ---
 
@@ -208,6 +210,283 @@ This command will:
 - RESTful API endpoints
 - Request validation
 - Response formatting
+
+---
+
+## User Interface Guide
+
+### Navigation & Layout
+
+The FreshTrackMart interface is organized with the following main sections:
+
+#### Header Navigation
+- **Home** - Returns to main dashboard
+- **Products** - Access to product listings
+- **Inventory** - Track stock levels
+- **Reports** - View analytics and reports
+- **Settings** - User and system preferences
+- **User Profile** - Account management and logout
+
+#### Sidebar (if present)
+Contains quick links to:
+- Dashboard
+- Main Features
+- Admin Tools (if admin user)
+- Help & Documentation
+
+### Common UI Patterns
+
+#### Buttons
+- **Primary Buttons** (Blue) - Main actions (Save, Submit, Add)
+- **Secondary Buttons** (Gray) - Alternative actions (Cancel, Back)
+- **Danger Buttons** (Red) - Destructive actions (Delete, Remove)
+
+#### Forms
+- Required fields are marked with an asterisk (*)
+- Error messages appear in red text below the field
+- Success messages appear as green notifications
+- Form validation occurs on blur and submission
+
+#### Tables
+- Click headers to sort columns
+- Use pagination controls at bottom to navigate pages
+- Check boxes for multi-select actions
+- Action buttons appear in the rightmost column
+
+---
+
+## Step-by-Step Function & Button Guide
+
+### Dashboard Access
+
+#### How to Access the Dashboard
+1. **Open your browser** and navigate to `http://localhost:8000` (or your configured domain)
+2. **Login Page** appears if not authenticated
+   - Enter your **Email Address** in the email field
+   - Enter your **Password** in the password field
+   - Click **Login** button (blue button at bottom)
+3. **Dashboard Loads** - You are now on the main dashboard
+4. **Verify Login** - Your username appears in the top-right corner
+
+### Product Management
+
+#### Adding a New Product
+
+**Location**: Main Menu > Products > Add New Product
+
+**Step-by-Step Instructions**:
+
+1. **Navigate to Products**
+   - Click on "Products" in the main navigation menu (top navigation bar)
+   - From the dropdown, select "Add New Product" or click the "➕ Add Product" button
+
+2. **Fill in Product Information**
+   - **Product Name** field: Enter the name of the product (e.g., "Fresh Apples")
+   - **Category** dropdown: Select the product category (e.g., "Fruits", "Vegetables")
+   - **Price** field: Enter the selling price (e.g., "5.99")
+   - **Stock Quantity** field: Enter available units
+   - **Expiry Date** field: Click calendar icon and select expiration date
+   - **Description** text area: Add detailed product description (optional)
+
+3. **Upload Product Image** (Optional)
+   - Click on "📷 Upload Image" button
+   - Select an image file from your computer
+   - Image preview will appear below the button
+
+4. **Review Information**
+   - Double-check all entered information
+   - Ensure all required fields (marked with *) are filled
+
+5. **Save the Product**
+   - Click the blue **"Save Product"** button at bottom-right
+   - A green success message appears: "Product added successfully!"
+   - You are redirected to the Products List page
+
+6. **Verify Addition**
+   - Your new product should appear at the top of the Products list
+   - Product details are now visible in the table
+
+#### Editing a Product
+
+**Location**: Products List > Action Column
+
+**Step-by-Step Instructions**:
+
+1. **Go to Products List**
+   - Click "Products" in the main menu
+   - View the list of all products
+
+2. **Find the Product to Edit**
+   - Scroll through the list to locate your product
+   - Use the **Search Bar** (top of table) to quickly find the product by name
+   - Type product name and press Enter
+
+3. **Open Edit Form**
+   - In the product row, locate the action buttons on the right
+   - Click the **✏️ Edit** button (pencil icon)
+   - The edit form opens with pre-filled product information
+
+4. **Modify Information**
+   - Change any fields as needed:
+     - Update Product Name
+     - Change Category
+     - Adjust Price
+     - Update Stock Quantity
+     - Change Expiry Date
+   - Leave fields unchanged if no modification needed
+
+5. **Save Changes**
+   - Click the blue **"Update Product"** button at bottom-right
+   - A green success message confirms: "Product updated successfully!"
+   - Returns to Products List
+
+#### Deleting a Product
+
+**Location**: Products List > Action Column
+
+**Step-by-Step Instructions**:
+
+1. **Navigate to Products List**
+   - Click "Products" in the main menu
+
+2. **Find the Product**
+   - Locate the product you want to delete in the list
+   - Use search if needed
+
+3. **Initiate Deletion**
+   - In the product row, click the **🗑️ Delete** button (trash icon - red)
+   - A confirmation dialog appears asking: "Are you sure you want to delete this product?"
+
+4. **Confirm Deletion**
+   - Click **"Yes, Delete"** button (red) to confirm
+   - OR click **"Cancel"** button (gray) to abort deletion
+
+5. **Verify Deletion**
+   - Upon confirmation, product is removed from list
+   - Success message appears: "Product deleted successfully!"
+
+### Inventory Management
+
+#### Checking Stock Levels
+
+**Location**: Main Menu > Inventory > Stock Levels
+
+**Step-by-Step Instructions**:
+
+1. **Go to Inventory Section**
+   - Click "Inventory" in the main navigation menu
+   - Click "Stock Levels" from the submenu
+
+2. **View Stock Information**
+   - Table displays all products with current stock quantities
+   - **Columns** show:
+     - Product Name
+     - Current Stock (quantity)
+     - Minimum Stock Level (warning threshold)
+     - Status (In Stock / Low Stock / Out of Stock)
+
+3. **Identify Low Stock Items**
+   - Items with status "Low Stock" appear highlighted in yellow
+   - Items with status "Out of Stock" appear highlighted in red
+
+4. **Update Stock Quantity** (if needed)
+   - Click the product name to open product details
+   - Click **"Update Stock"** button
+   - Enter new quantity in the popup dialog
+   - Click **"Confirm"** button
+
+5. **Export Stock Report** (Optional)
+   - Click the **"📥 Export Report"** button (top-right)
+   - Select format: CSV or Excel
+   - Report downloads to your computer
+
+### Reports & Analytics
+
+#### Generating a Sales Report
+
+**Location**: Main Menu > Reports > Sales Report
+
+**Step-by-Step Instructions**:
+
+1. **Access Reports Section**
+   - Click "Reports" in the main navigation menu
+   - Select "Sales Report" from dropdown
+
+2. **Set Report Filters** (Optional)
+   - **Date Range**: 
+     - Click "From Date" field, select start date
+     - Click "To Date" field, select end date
+   - **Product Category**: 
+     - Click dropdown to select specific category (or leave as "All")
+   - **Status Filter**: 
+     - Select "Completed" / "Pending" / "All" orders
+
+3. **Generate Report**
+   - Click the blue **"Generate Report"** button
+   - Report loads and displays in table below
+
+4. **View Report Data**
+   - Table shows:
+     - Order Date
+     - Product Name
+     - Quantity Sold
+     - Revenue
+     - Customer Name
+   - Totals row appears at bottom showing sum of all columns
+
+5. **Export Report**
+   - Click **"📥 Download as CSV"** or **"📥 Download as PDF"** button
+   - File downloads to your default Downloads folder
+
+6. **Print Report** (Optional)
+   - Click **"🖨️ Print"** button
+   - Print dialog opens
+   - Select printer and click "Print"
+
+### User Account Management
+
+#### Updating Your Profile
+
+**Location**: Top-Right Corner > User Profile Icon > My Profile
+
+**Step-by-Step Instructions**:
+
+1. **Access Profile Settings**
+   - Look at the top-right corner of the page
+   - Click on your **User Profile Icon** (avatar with initials)
+   - Click "My Profile" from the dropdown menu
+
+2. **Edit Profile Information**
+   - **Full Name** field: Update your name if needed
+   - **Email Address** field: Change email
+   - **Phone Number** field: Update contact number (optional)
+   - **Address** field: Enter/update address
+
+3. **Change Password** (Optional)
+   - Scroll down to "Change Password" section
+   - Click **"Change Password"** button
+   - Enter **Current Password** in first field
+   - Enter **New Password** in second field
+   - Re-enter **Confirm Password** in third field
+   - Click **"Update Password"** button
+
+4. **Save Changes**
+   - Click the blue **"Save Profile"** button at bottom
+   - Success message confirms: "Profile updated successfully!"
+
+#### Logging Out
+
+**Location**: Top-Right Corner > User Profile Icon > Logout
+
+**Step-by-Step Instructions**:
+
+1. **Access Logout Option**
+   - Click on your **User Profile Icon** in the top-right corner
+   - A dropdown menu appears
+
+2. **Logout**
+   - Click **"Logout"** option from the dropdown
+   - Session ends and you return to the login page
 
 ---
 
@@ -500,9 +779,10 @@ Check logs at `storage/logs/laravel.log`
 
 ## Document Version
 
-- **Manual Version**: 1.0
+- **Manual Version**: 2.0
 - **Last Updated**: 2026-05-17
 - **Author**: Auto-generated for FreshTrackMart
+- **Updates**: Added User Interface Guide and Step-by-Step Function & Button Guide sections
 
 ---
 
